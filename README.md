@@ -7,13 +7,13 @@ networkx is the library used to draw graph
 
 to run:
 on linux or mac
-'''
+```
 python main.py filename method
-'''
+```
 
 help:
-'''
+```
 python main.py -h
-'''
+```
 
 make sure you are using python 3.4
