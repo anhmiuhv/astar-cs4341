@@ -37,11 +37,12 @@ def rowcol_from(arraypos):
 	return (row, col)
 
 #robot information
+valid_dir = ["n", "s", "e", "w"]
+valid = ["fw", "leap", "left", "right"]
 
-
-#node for a star
+#node for a-star
 class Robot:
-	valid_dir = ["n", "s", "e", "w"]
+	
 	def __init__(self):
 		for i in l:
 			if 'S' in i:
@@ -50,7 +51,6 @@ class Robot:
 		self.direction = 'n'
 
 	def getcost(self, dis):
-		new_rc = (-1,-1)
 		f = math.inf
 		
 		#direction of the step
@@ -131,9 +131,9 @@ class Robot:
 		elif self.direction == "e":
 			self.pos_c += dis
 
+
 class Step:
-	valid = ["fw", "leap", "left", "right"]
-	def __init__(self,type):
+	def __init__(self, type):
 		if type in valid:
 			self.type = type
 
