@@ -15,7 +15,7 @@ l = [] #all the information about the terrain
 r = 0 #row of the terrain
 c = 0 #column of the terrain
 for line in f.readlines():
-    cols = line.split('\t')
+    cols = line.split()
     l.extend(cols)
     r += 1
     c = len(cols)
