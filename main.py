@@ -151,4 +151,4 @@ class Step:
 #print (array_pos(1,2))
 #print (rowcol_from(5))
 
-
+# vim: set noexpandtab ts=4 sw=4 :
