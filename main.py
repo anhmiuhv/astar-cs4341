@@ -43,12 +43,10 @@ def rowcol_from(arraypos):
 class Robot:
 	valid_dir = ["n", "s", "e", "w"]
 	def __init__(self):
-		self.robot_pos = [[0 for i in range(c)] for j in range(r)]
 		for i in l:
 			if 'S' in i:
 				self.pos_r = l.index(i)
 				self.pos_c = i.index('S')
-				self.robot_pos[pos_r][pos_c] = 1
 		self.direction = 'n'
 
 	def getcost(self, dis):
@@ -77,27 +75,67 @@ class Robot:
 				return math.inf
 			f = l[self.pos_r][new_c]
 
+		if f == "#":
+			return math.inf
+		if f == "S" or f == "G":
+			return 1
 		return f
+
+	def cost(self,step):
+		if step.type == "leap":
+			if self.getcost(3) == math.inf:
+				return math.inf
+			return 20
+		elif step.type == "fw":
+			return self.getcost(1)
+		elif step.type == "left" or step.type == "right":
+			co = math.ceil(self.getcost(0) * 1/3)
+			return co
+		else:
+			return math.inf
+
+	#make sure that the step cost is not infinity before running this function
+	def execute(self, step):
+		dis = 0
+		if step.type == "leap":
+			dis = 3
+		elif step.type == "fw":
+			dis = 1
+		elif step.type == "left":
+			if self.direction == "n":
+				self.direction = "w"
+			elif self.direction == "s":
+				self.direction = "e"
+			elif self.direction == "e":
+				self.direction = "n"
+			elif self.direction == "w":
+				self.direction = "s"
+			return
+		elif step.type == "right":
+			if self.direction == "n":
+				self.direction = "e"
+			elif self.direction == "s":
+				self.direction = "w"
+			elif self.direction == "e":
+				self.direction = "s"
+			elif self.direction == "w":
+				self.direction = "n"
+			return
+
+		if self.direction == "n":
+			self.pos_r -= dis
+		elif self.direction == "s":
+			self.pos_r += dis
+		elif self.direction == "w":
+			self.pos_c -= dis
+		elif self.direction == "e":
+			self.pos_c += dis
 
 class Step:
 	valid = ["fw", "leap", "left", "right"]
 	def __init__(self,type):
 		if type in valid:
 			self.type = type
-
-	def cost(robot):
-		if self.type == "leap":
-			if robot.getcost(3) == math.inf:
-				return math.inf
-			return 20
-		elif self.type == "fw":
-			return robot.getcost(1)
-		elif self.type == "left" or self.type == "right":
-			cost = math.ceil(robot.getcost(0) * 1/3)
-			return cost
-		else:
-			return math.inf
-
 
 
 
