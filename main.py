@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import math
 
@@ -64,14 +65,14 @@ class Robot:
 			new_rc = (rowcol[0], rowcol[1] + 1)
 			if new_rc[1] >= c:
 				return math.inf
-				
+
 
 class Step:
 	valid = ["fw", "leap", "left", "right"]
 	def __init__(self,type):
 		if type in valid:
 			self.type = type
-		
+
 	def cost(robot):
 		rowcol = rowcol_from(robot_pos)
 		if self.type == "leap":
