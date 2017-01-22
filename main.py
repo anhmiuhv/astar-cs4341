@@ -16,13 +16,13 @@ r = 0 #row of the terrain
 c = 0 #column of the terrain
 for line in f.readlines():
     cols = line.split()
-    l.extend(cols)
+    l.append(cols)
     r += 1
     c = len(cols)
-l = [a.strip('\n') for a in l]
 f.close()
 
 #helper function
+#these two should not be needed anymore
 def array_pos(row, col):
 	if row >= r or col >= c:
 		return -1
@@ -43,27 +43,29 @@ def rowcol_from(arraypos):
 class Robot:
 	valid_dir = ["n", "s", "e", "w"]
 	def __init__(self):
-		self.robot_pos = [0 for _ in range(c * r)]
-		self.robot_pos[l.index('S')] = 1
-		self.pos = l.index('S')
+		self.robot_pos = [[0 for i in range(c)] for j in range(r)]
+                for i in l:
+                    if 'S' in i:
+                        self.pos_r = l.index(i)
+                        self.pos_c = i.index('S')
+                        self.robot_pos[pos_r][pos_c] = 1
 		self.direction = 'n'
 
 	def getcost(self, dis):
-		rowcol = rowcol_from(self.pos)
 		new_rc = (-1,-1)
 		f = math.inf
 		if self.direction == "n":
-			new_rc = (rowcol[0] - dis, rowcol[1])
-			if new_rc[0] < 0:
+			new_r = self.pos_r - dis
+			if new_r < 0:
 				return math.inf
-			f = l[arraypos(new_rc)]
+			f = l[new_r][self.pos_c]
 		elif self.direction == "s":
-			new_rc = (rowcol[0] + dis, rowcol[1])
-			if new_rc[0] >= r:
+			new_r = self.pos_r + dis
+			if new_r >= r:
 				return math.inf
 		elif self.direction == "e":
-			new_rc = (rowcol[0], rowcol[1] + 1)
-			if new_rc[1] >= c:
+			new_c = self.pos_c + dis
+			if new_c >= c:
 				return math.inf
 
 
@@ -74,12 +76,11 @@ class Step:
 			self.type = type
 
 	def cost(robot):
-		rowcol = rowcol_from(robot_pos)
 		if self.type == "leap":
 			#TODO: detect unleapable terrain
 			return 20
 		if robot.direction == "n":
-			new_rc = (rowcol[0] + 1, rowcol[1])
+			new_rc = (robot.pos_c + 1, robot.pos_r)
 
 
 
@@ -93,7 +94,7 @@ class Step:
 
 
 #test
-print (array_pos(1,2))
-print (rowcol_from(5))
+#print (array_pos(1,2))
+#print (rowcol_from(5))
 
 
