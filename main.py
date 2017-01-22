@@ -15,10 +15,10 @@ l = [] #all the information about the terrain
 r = 0 #row of the terrain
 c = 0 #column of the terrain
 for line in f.readlines():
-    cols = line.split()
-    l.append(cols)
-    r += 1
-    c = len(cols)
+	cols = line.split()
+	l.append(cols)
+	r += 1
+	c = len(cols)
 f.close()
 
 #helper function
@@ -44,16 +44,18 @@ class Robot:
 	valid_dir = ["n", "s", "e", "w"]
 	def __init__(self):
 		self.robot_pos = [[0 for i in range(c)] for j in range(r)]
-                for i in l:
-                    if 'S' in i:
-                        self.pos_r = l.index(i)
-                        self.pos_c = i.index('S')
-                        self.robot_pos[pos_r][pos_c] = 1
+		for i in l:
+			if 'S' in i:
+				self.pos_r = l.index(i)
+				self.pos_c = i.index('S')
+				self.robot_pos[pos_r][pos_c] = 1
 		self.direction = 'n'
 
 	def getcost(self, dis):
 		new_rc = (-1,-1)
 		f = math.inf
+		
+		#direction of the step
 		if self.direction == "n":
 			new_r = self.pos_r - dis
 			if new_r < 0:
@@ -63,11 +65,19 @@ class Robot:
 			new_r = self.pos_r + dis
 			if new_r >= r:
 				return math.inf
+			f = l[new_r][self.pos_c]
 		elif self.direction == "e":
 			new_c = self.pos_c + dis
 			if new_c >= c:
 				return math.inf
+			f = l[self.pos_r][new_c]
+		elif self.direction == "w":
+			new_c = self.pos_c - dis
+			if new_c < 0:
+				return math.inf
+			f = l[self.pos_r][new_c]
 
+		return f
 
 class Step:
 	valid = ["fw", "leap", "left", "right"]
@@ -77,10 +87,16 @@ class Step:
 
 	def cost(robot):
 		if self.type == "leap":
-			#TODO: detect unleapable terrain
+			if robot.getcost(3) == math.inf:
+				return math.inf
 			return 20
-		if robot.direction == "n":
-			new_rc = (robot.pos_c + 1, robot.pos_r)
+		elif self.type == "fw":
+			return robot.getcost(1)
+		elif self.type == "left" or self.type == "right":
+			cost = math.ceil(robot.getcost(0) * 1/3)
+			return cost
+		else:
+			return math.inf
 
 
 
