@@ -206,9 +206,12 @@ class Step:
 			self.type = "fw"
 
 score = 0
+neighbor_num = 0
+nodes_num = 0
+
 #a star function
 def astar(heuristic):
-	global score
+	global score, neighbor_num, nodes_num
 	r = Robot()
 	opqueue = PriorityQueue()
 	opqueue.put(r, 0)
@@ -219,6 +222,8 @@ def astar(heuristic):
 
 	while not opqueue.empty():
 		current = opqueue.get()
+		nodes_num += 1
+		neighbor_num += len(current.neighbors())
 
 		if current.isGoal():
 			score += 500
@@ -247,6 +252,8 @@ goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
 path = construct_path(cameFrom, Robot(), goal)
 print("Score: " + str(score))
 print("Number of steps: " + str(len(path) - 1))
+print("Number of nodes expanded: " + str(nodes_num))
+print("Estimated branching factor: " + str(neighbor_num / nodes_num))
 for a in path:
 	print(a.prevstep)
 #test
