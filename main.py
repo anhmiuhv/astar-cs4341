@@ -2,7 +2,7 @@
 import argparse
 import math
 import heapq
-
+import time
 #parsing option from users
 parser = argparse.ArgumentParser(description='Please give mr.robot a terrain information')
 parser.add_argument('filename', help='the name of the file for terrain info')
@@ -49,7 +49,7 @@ def rowcol_from(arraypos):
 #robot information
 valid_dir = ["n", "s", "e", "w"]
 valid = ["fw", "leap", "left", "right"]
-inf = 10000000
+inf = 1000000000
 
 #node for a-star
 class PriorityQueue:
@@ -205,8 +205,10 @@ class Step:
 		else:
 			self.type = "fw"
 
+score = 0
 #a star function
 def astar(heuristic):
+	global score
 	r = Robot()
 	opqueue = PriorityQueue()
 	opqueue.put(r, 0)
@@ -219,6 +221,7 @@ def astar(heuristic):
 		current = opqueue.get()
 		
 		if current.isGoal():
+			score += 500
 			break
 		
 		for n in current.neighbors():
@@ -234,11 +237,16 @@ def astar(heuristic):
 #heuristic function
 
 #handling the input and main function
+exetime = time.time()
 if args.method == 1:
 	cameFrom = astar(lambda x: 0)[0]
-	
+
+exetime = time.time() - exetime
+score -= int(exetime / 0.02) 
 goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
 path = construct_path(cameFrom, Robot(), goal)
+print("Score: " + str(score))
+print("Number of steps: " + str(len(path) - 1))
 print([a.prevstep for a in path])
 #test
 #print (array_pos(1,2))
