@@ -225,8 +225,8 @@ def astar(heuristic):
 			break
 		
 		for n in current.neighbors():
-			new_cost = cost_so_far[current] + current.cost(n) + heuristic(current)
 			new_node = current.execute(n)
+			new_cost = cost_so_far[current] + current.cost(n) + heuristic(new_node)
 			if new_node not in cost_so_far or new_cost < cost_so_far[new_node]:
 				cost_so_far[new_node] = new_cost
 				priority = new_cost
@@ -247,7 +247,8 @@ goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
 path = construct_path(cameFrom, Robot(), goal)
 print("Score: " + str(score))
 print("Number of steps: " + str(len(path) - 1))
-print([a.prevstep for a in path])
+for a in path:
+	print(a.prevstep)
 #test
 #print (array_pos(1,2))
 #print (rowcol_from(5))
