@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 import math
-from _operator import pos
 import heapq
 
 #parsing option from users
@@ -25,6 +24,15 @@ f.close()
 
 #helper function
 #these two should not be needed anymore
+def construct_path(came_from, start, goal):
+	current = goal
+	path = [current]
+	while current != start:
+		current = came_from[current]
+		path.append(current)	
+	path.reverse() 
+	return path
+
 def array_pos(row, col):
 	if row >= r or col >= c:
 		return -1
@@ -191,51 +199,46 @@ class Robot:
 		return steps
 
 class Step:
-	def __init__(self, type):
-		if type in valid:
-			self.type = type
+	def __init__(self, t):
+		if t in valid:
+			self.type = t
 		else:
 			self.type = "fw"
 
-#main a star function
-def astar1():
+#a star function
+def astar(heuristic):
 	r = Robot()
-	frontier = PriorityQueue()
-	frontier.put(r, 0)
+	opqueue = PriorityQueue()
+	opqueue.put(r, 0)
 	cameFrom = {}
 	cost_so_far = {}
 	cameFrom[r] = None
 	cost_so_far[r] = 0
 	
-	while not frontier.empty():
-		current = frontier.get()
+	while not opqueue.empty():
+		current = opqueue.get()
 		
 		if current.isGoal():
 			break
 		
-		for next in current.neighbors():
-			new_cost = cost_so_far[current] + current.cost(next)
-			new_node = current.execute(next)
+		for n in current.neighbors():
+			new_cost = cost_so_far[current] + current.cost(n) + heuristic(current)
+			new_node = current.execute(n)
 			if new_node not in cost_so_far or new_cost < cost_so_far[new_node]:
 				cost_so_far[new_node] = new_cost
 				priority = new_cost
-				frontier.put(new_node, priority)
+				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
 	return cameFrom, cost_so_far
 		
-def reconstruct_path(came_from, start, goal):
-	current = goal
-	path = [current]
-	while current != start:
-		current = came_from[current]
-		path.append(current)	
-	path.reverse() # optional
-	return path
+#heuristic function
 
-cameFrom = astar1()[0]
+#handling the input and main function
+if args.method == 1:
+	cameFrom = astar(lambda x: 0)[0]
+	
 goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
-path = reconstruct_path(cameFrom, Robot(), goal)
-print(str(goal))
+path = construct_path(cameFrom, Robot(), goal)
 print([a.prevstep for a in path])
 #test
 #print (array_pos(1,2))
