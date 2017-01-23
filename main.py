@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import argparse
 import math
+from _operator import pos
+import heapq
 
 #parsing option from users
 parser = argparse.ArgumentParser(description='Please give mr.robot a terrain information')
@@ -39,52 +41,86 @@ def rowcol_from(arraypos):
 #robot information
 valid_dir = ["n", "s", "e", "w"]
 valid = ["fw", "leap", "left", "right"]
+inf = 10000000
 
 #node for a-star
-class Robot:
-	
+class PriorityQueue:
 	def __init__(self):
-		for i in l:
-			if 'S' in i:
-				self.pos_r = l.index(i)
-				self.pos_c = i.index('S')
+		self.elements = []
+	
+	def empty(self):
+		return len(self.elements) == 0
+	
+	def put(self, item, priority):
+		heapq.heappush(self.elements, (priority, item))
+	
+	def get(self):
+		return heapq.heappop(self.elements)[1]
+
+class Robot:
+	def __init__(self, pos_r = None, pos_c = None):
+		if pos_r == None:
+			for i in l:
+				if 'S' in i:
+					self.pos_r = l.index(i)
+					self.pos_c = i.index('S')
+					self.prevstep = "start"
+		else:
+			self.pos_c = pos_c
+			self.pos_r = pos_r
 		self.direction = 'n'
+		
+	
+	def isGoal(self):
+		return l[self.pos_r][self.pos_c] == "G"
+	
+	def __eq__(self, other): 
+		return self.__dict__ == other.__dict__
+	
+	def __lt__(self, other):
+		return True
+	
+	def __str__(self):
+		return str(self.__dict__)
+	
+	def __hash__(self):
+		return hash((self.pos_r, self.pos_c, self.direction))
 
 	def getcost(self, dis):
-		f = math.inf
+		f = inf
 		
 		#direction of the step
 		if self.direction == "n":
 			new_r = self.pos_r - dis
 			if new_r < 0:
-				return math.inf
+				return inf
 			f = l[new_r][self.pos_c]
 		elif self.direction == "s":
 			new_r = self.pos_r + dis
 			if new_r >= r:
-				return math.inf
+				return inf
 			f = l[new_r][self.pos_c]
 		elif self.direction == "e":
 			new_c = self.pos_c + dis
 			if new_c >= c:
-				return math.inf
+				return inf
 			f = l[self.pos_r][new_c]
 		elif self.direction == "w":
 			new_c = self.pos_c - dis
 			if new_c < 0:
-				return math.inf
+				return inf
 			f = l[self.pos_r][new_c]
 
 		if f == "#":
-			return math.inf
+			return inf
 		if f == "S" or f == "G":
 			return 1
-		return f
+		return int(f)
 
 	def cost(self,step):
 		if step.type == "leap":
-			if self.getcost(3) == math.inf:
-				return math.inf
+			if self.getcost(3) == inf:
+				return inf
 			return 20
 		elif step.type == "fw":
 			return self.getcost(1)
@@ -92,61 +128,115 @@ class Robot:
 			co = math.ceil(self.getcost(0) * 1/3)
 			return co
 		else:
-			return math.inf
+			return inf
 
 	#make sure that the step cost is not infinity before running this function
 	def execute(self, step):
 		dis = 0
+		
+		new_robot = Robot(self.pos_r, self.pos_c)
+		new_robot.direction = self.direction
+		
 		if step.type == "leap":
+			new_robot.prevstep = "leap"
 			dis = 3
 		elif step.type == "fw":
+			new_robot.prevstep = "Forward"
 			dis = 1
 		elif step.type == "left":
+			new_robot.prevstep = "Turn left"
 			if self.direction == "n":
-				self.direction = "w"
+				new_robot.direction = "w"
 			elif self.direction == "s":
-				self.direction = "e"
+				new_robot.direction = "e"
 			elif self.direction == "e":
-				self.direction = "n"
+				new_robot.direction = "n"
 			elif self.direction == "w":
-				self.direction = "s"
-			return
+				new_robot.direction = "s"
+			return new_robot
 		elif step.type == "right":
+			new_robot.prevstep = "Turn right"
 			if self.direction == "n":
-				self.direction = "e"
+				new_robot.direction = "e"
 			elif self.direction == "s":
-				self.direction = "w"
+				new_robot.direction = "w"
 			elif self.direction == "e":
-				self.direction = "s"
+				new_robot.direction = "s"
 			elif self.direction == "w":
-				self.direction = "n"
-			return
+				new_robot.direction = "n"
+			return new_robot
 
 		if self.direction == "n":
-			self.pos_r -= dis
+			new_robot.pos_r -= dis
 		elif self.direction == "s":
-			self.pos_r += dis
+			new_robot.pos_r += dis
 		elif self.direction == "w":
-			self.pos_c -= dis
+			new_robot.pos_c -= dis
 		elif self.direction == "e":
-			self.pos_c += dis
-
+			new_robot.pos_c += dis
+		return new_robot
+			
+	def neighbors(self):
+		steps = []
+		step = Step("fw")
+		if self.cost(step) != inf:
+			steps.append(step)
+		step = Step("left")
+		steps.append(step)
+		step = Step("right")
+		steps.append(step)
+		step = Step("leap")
+		if self.cost(step) != inf:
+			steps.append(step)
+		return steps
 
 class Step:
 	def __init__(self, type):
 		if type in valid:
 			self.type = type
-
-
-
-
-
-
-
+		else:
+			self.type = "fw"
 
 #main a star function
+def astar1():
+	r = Robot()
+	frontier = PriorityQueue()
+	frontier.put(r, 0)
+	cameFrom = {}
+	cost_so_far = {}
+	cameFrom[r] = None
+	cost_so_far[r] = 0
+	
+	while not frontier.empty():
+		current = frontier.get()
+		
+		if current.isGoal():
+			break
+		
+		for next in current.neighbors():
+			new_cost = cost_so_far[current] + current.cost(next)
+			new_node = current.execute(next)
+			if new_node not in cost_so_far or new_cost < cost_so_far[new_node]:
+				cost_so_far[new_node] = new_cost
+				priority = new_cost
+				frontier.put(new_node, priority)
+				cameFrom[new_node] = current
+	return cameFrom, cost_so_far
+		
+def reconstruct_path(came_from, start, goal):
+	current = goal
+	path = [current]
+	while current != start:
+		current = came_from[current]
+		path.append(current)	
+	path.reverse() # optional
+	return path
 
-
+cameFrom = astar1()[0]
+goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
+path = reconstruct_path(cameFrom, Robot(), goal)
+print(str(goal))
+print([a.prevstep for a in path])
 #test
 #print (array_pos(1,2))
 #print (rowcol_from(5))
