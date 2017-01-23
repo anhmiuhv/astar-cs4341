@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import math
 import heapq
@@ -29,8 +29,8 @@ def construct_path(came_from, start, goal):
 	path = [current]
 	while current != start:
 		current = came_from[current]
-		path.append(current)	
-	path.reverse() 
+		path.append(current)
+	path.reverse()
 	return path
 
 def array_pos(row, col):
@@ -55,13 +55,13 @@ inf = 1000000000
 class PriorityQueue:
 	def __init__(self):
 		self.elements = []
-	
+
 	def empty(self):
 		return len(self.elements) == 0
-	
+
 	def put(self, item, priority):
 		heapq.heappush(self.elements, (priority, item))
-	
+
 	def get(self):
 		return heapq.heappop(self.elements)[1]
 
@@ -77,26 +77,26 @@ class Robot:
 			self.pos_c = pos_c
 			self.pos_r = pos_r
 		self.direction = 'n'
-		
-	
+
+
 	def isGoal(self):
 		return l[self.pos_r][self.pos_c] == "G"
-	
-	def __eq__(self, other): 
+
+	def __eq__(self, other):
 		return self.__dict__ == other.__dict__
-	
+
 	def __lt__(self, other):
 		return True
-	
+
 	def __str__(self):
 		return str(self.__dict__)
-	
+
 	def __hash__(self):
 		return hash((self.pos_r, self.pos_c, self.direction))
 
 	def getcost(self, dis):
 		f = inf
-		
+
 		#direction of the step
 		if self.direction == "n":
 			new_r = self.pos_r - dis
@@ -141,10 +141,10 @@ class Robot:
 	#make sure that the step cost is not infinity before running this function
 	def execute(self, step):
 		dis = 0
-		
+
 		new_robot = Robot(self.pos_r, self.pos_c)
 		new_robot.direction = self.direction
-		
+
 		if step.type == "leap":
 			new_robot.prevstep = "leap"
 			dis = 3
@@ -183,7 +183,7 @@ class Robot:
 		elif self.direction == "e":
 			new_robot.pos_c += dis
 		return new_robot
-			
+
 	def neighbors(self):
 		steps = []
 		step = Step("fw")
@@ -216,14 +216,14 @@ def astar(heuristic):
 	cost_so_far = {}
 	cameFrom[r] = None
 	cost_so_far[r] = 0
-	
+
 	while not opqueue.empty():
 		current = opqueue.get()
-		
+
 		if current.isGoal():
 			score += 500
 			break
-		
+
 		for n in current.neighbors():
 			new_node = current.execute(n)
 			new_cost = cost_so_far[current] + current.cost(n) + heuristic(new_node)
@@ -233,7 +233,7 @@ def astar(heuristic):
 				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
 	return cameFrom, cost_so_far
-		
+
 #heuristic function
 
 #handling the input and main function
@@ -242,7 +242,7 @@ if args.method == 1:
 	cameFrom = astar(lambda x: 0)[0]
 
 exetime = time.time() - exetime
-score -= int(exetime / 0.02) 
+score -= int(exetime / 0.02)
 goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
 path = construct_path(cameFrom, Robot(), goal)
 print("Score: " + str(score))
