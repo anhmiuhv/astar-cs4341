@@ -222,10 +222,12 @@ def astar(heuristic):
 	r = Robot()
 	opqueue = PriorityQueue()
 	opqueue.put(r, 0)
+	real_cost = {}
 	cameFrom = {}
 	cost_so_far = {}
 	cameFrom[r] = None
-	cost_so_far[r] = 0
+	cost_so_far[r] = heuristic(r)
+	real_cost[r] = 0
 
 	while not opqueue.empty():
 		current = opqueue.get()
@@ -241,45 +243,48 @@ def astar(heuristic):
 			new_cost = cost_so_far[current] + current.cost(n) + heuristic(new_node)
 			if new_node not in cost_so_far or new_cost < cost_so_far[new_node]:
 				cost_so_far[new_node] = new_cost
+				real_cost[new_node] = real_cost[current] + current.cost(n)
 				priority = new_cost
 				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
-	return cameFrom, cost_so_far
+	return cameFrom, cost_so_far, real_cost
 
 #heuristic function
 
 #handling the input and main function
-exetime = time.time()
+
 #heuristic1 = 0
 if args.method == 1:
-	cameFrom = astar(lambda x: 0)[0]
+	cameFrom, _, real_cost = astar(lambda x: 0)
 	
 #heuristic2 = minimum (vertical or horizontal distance from the node to goal)
 if args.method == 2:
-	cameFrom = astar(lambda x: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))[0]
+	cameFrom, _, real_cost = astar(lambda x: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
 	
 #heuristic3 = maximum (vertical or horizontal distance from the node to goal)
 if args.method == 3:
-	cameFrom = astar(lambda x: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))[0]
+	cameFrom, _, real_cost = astar(lambda x: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
 
 #heuristic4 = Manhattan distance
 if args.method == 4:
-	cameFrom = astar(lambda x: x.pos_c + x.pos_r)[0]
+	cameFrom, _, real_cost = astar(lambda x: x.pos_c + x.pos_r)
 	
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
 if args.method == 5:
-	cameFrom = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else ((x.pos_c + x.pos_r + x.getcost(3)) if (x.prevstep =='leap') else(x.pos_c + x.pos_r+x.getcost(0)/3))) [0]
+	cameFrom, _, real_cost = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else ((x.pos_c + x.pos_r + x.getcost(3)) if (x.prevstep =='leap') else(x.pos_c + x.pos_r+x.getcost(0)/3))) 
 
 #heuristic6 = heuristic5*3
 if args.method == 6:
-	cameFrom = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else ((3*(x.pos_c + x.pos_r + x.getcost(3))) if (x.prevstep =='leap') else(3*(x.pos_c + x.pos_r+x.getcost(0)/3)))) [0]
+	cameFrom, _, real_cost = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else ((3*(x.pos_c + x.pos_r + x.getcost(3))) if (x.prevstep =='leap') else(3*(x.pos_c + x.pos_r+x.getcost(0)/3)))) 
 
 
-exetime = time.time() - exetime
-score -= int(exetime / 0.02)
+
+
 goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
 path = construct_path(cameFrom, Robot(), goal)
+score = score - real_cost[goal]
 print("Score: " + str(score))
+print("Cost: " + str(real_cost[goal]) + " to " + str(g) + " from " + str((Robot().pos_r, Robot().pos_c)))
 print("Number of steps: " + str(len(path) - 1))
 print("Number of nodes expanded: " + str(nodes_num))
 print("Estimated branching factor: " + str(neighbor_num / nodes_num))
