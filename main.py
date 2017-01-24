@@ -65,6 +65,13 @@ class PriorityQueue:
 	def get(self):
 		return heapq.heappop(self.elements)[1]
 
+for i in l:
+	if 'S' in i:
+		p1 = l.index(i)
+		p2 = i.index('G')
+
+g = (p1,p2) #goal coordinate
+					
 class Robot:
 	def __init__(self, pos_r = None, pos_c = None):
 		if pos_r == None:
