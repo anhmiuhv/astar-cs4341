@@ -66,7 +66,7 @@ class PriorityQueue:
 		return heapq.heappop(self.elements)[1]
 
 for i in l:
-	if 'S' in i:
+	if 'G' in i:
 		p1 = l.index(i)
 		p2 = i.index('G')
 
@@ -250,8 +250,30 @@ def astar(heuristic):
 
 #handling the input and main function
 exetime = time.time()
+#heuristic1 = 0
 if args.method == 1:
 	cameFrom = astar(lambda x: 0)[0]
+	
+#heuristic2 = minimum (vertical or horizontal distance from the node to goal)
+if args.method == 2:
+	cameFrom = astar(lambda x: min(abs(g[0]-x.pos_c),abs(g[1]-x.pos_r)))[0]
+	
+#heuristic3 = maximum (vertical or horizontal distance from the node to goal)
+if args.method == 3:
+	cameFrom = astar(lambda x: max(abs(g[0]-x.pos_c),abs(g[1]-x.pos_r)))[0]
+
+#heuristic4 = Manhattan distance
+if args.method == 4:
+	cameFrom = astar(lambda x: x.pos_c + x.pos_r)[0]
+	
+#heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
+if args.method == 5:
+	cameFrom = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else (x.pos_c + x.pos_r + x.getcost(0)/3)) [0]
+
+#heuristic6 = heuristic5*3
+if args.method == 6:
+	cameFrom = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else (3*(x.pos_c + x.pos_r+x.getcost(0)/3))) [0]
+
 
 exetime = time.time() - exetime
 score -= int(exetime / 0.02)
