@@ -256,11 +256,11 @@ if args.method == 1:
 	
 #heuristic2 = minimum (vertical or horizontal distance from the node to goal)
 if args.method == 2:
-	cameFrom = astar(lambda x: min(abs(g[0]-x.pos_c),abs(g[1]-x.pos_r)))[0]
+	cameFrom = astar(lambda x: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))[0]
 	
 #heuristic3 = maximum (vertical or horizontal distance from the node to goal)
 if args.method == 3:
-	cameFrom = astar(lambda x: max(abs(g[0]-x.pos_c),abs(g[1]-x.pos_r)))[0]
+	cameFrom = astar(lambda x: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))[0]
 
 #heuristic4 = Manhattan distance
 if args.method == 4:
