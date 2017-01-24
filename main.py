@@ -268,11 +268,11 @@ if args.method == 4:
 	
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
 if args.method == 5:
-	cameFrom = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else (x.pos_c + x.pos_r + x.getcost(0)/3)) [0]
+	cameFrom = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else ((x.pos_c + x.pos_r + x.getcost(3)) if (x.prevstep =='leap') else(x.pos_c + x.pos_r+x.getcost(0)/3))) [0]
 
 #heuristic6 = heuristic5*3
 if args.method == 6:
-	cameFrom = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else (3*(x.pos_c + x.pos_r+x.getcost(0)/3))) [0]
+	cameFrom = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else ((3*(x.pos_c + x.pos_r + x.getcost(3))) if (x.prevstep =='leap') else(3*(x.pos_c + x.pos_r+x.getcost(0)/3)))) [0]
 
 
 exetime = time.time() - exetime
