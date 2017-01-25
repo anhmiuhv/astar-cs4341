@@ -1,11 +1,11 @@
 import random
-f = open("sample1.txt", "w+")
+f = open("sample3.txt", "w+")
 st = ""
 start = False
 goal = False
 for i in range(1000):
     for j in range(1000):
-        nu = random.randint(0, 70)
+        nu = random.randint(0, 700)
         if nu == 0 and not start:
             start = True
             st += "S\t"
@@ -15,7 +15,7 @@ for i in range(1000):
             st += "G\t"
             continue
 
-        if nu < 20:
+        if nu < 200:
             st += "#\t"
         else:
             c = random.randint(0,9)

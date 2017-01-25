@@ -290,12 +290,19 @@ if args.method == 4:
 	cameFrom, _, real_cost = astar(lambda x,n: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))
 
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
-if args.method == 5:
-	cameFrom, _, real_cost = astar(lambda x,n: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) if (n.type == 'fw') else ((abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3)) if (n.type =='leap') else(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3)))
+def heu5(x, n):
+	if (n.type == 'fw'):
+		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
+	elif (n.type =='leap'):
+		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3) 
+	else:
+		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3
 
+if args.method == 5:
+	cameFrom, _, real_cost = astar(heu5)
 #heuristic6 = heuristic5*3
 if args.method == 6:
-	cameFrom, _, real_cost = astar(lambda x,n: (3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))) if (n.type == 'fw') else ((3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3))) if (n.type =='leap') else(3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3))))
+	cameFrom, _, real_cost = astar(lambda x,n: 3 * heu5(x, n))
 
 
 
