@@ -295,13 +295,13 @@ def heu5(x, n):
 		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
 	else:
 		if x.direction == "n" and (g[0]-x.pos_r) > 0:
-			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + int(x.getcost(0) / 4)
 		elif x.direction == "s" and (g[0]-x.pos_r) < 0:
-			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + int(x.getcost(0) / 4)
 		elif x.direction == "e" and (g[1]-x.pos_c) < 0:
-			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + int(x.getcost(0) / 4)
 		elif x.direction == "w" and (g[1]-x.pos_c) > 0:
-			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + int(x.getcost(0) / 4)
 		else:
 			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
 
