@@ -244,7 +244,8 @@ def astar(heuristic):
 	cameFrom = {}
 	cost_so_far = {}
 	cameFrom[r] = None
-	cost_so_far[r] = heuristic(r)
+	firstStep = Step('start');
+	cost_so_far[r] = heuristic(r,firstStep)
 	real_cost[r] = 0
 
 	while not opqueue.empty():
@@ -261,7 +262,7 @@ def astar(heuristic):
 			new_cost = real_cost[current] + current.cost(n)
 			if new_node not in real_cost or new_cost < real_cost[new_node]:
 				real_cost[new_node] = real_cost[current] + current.cost(n)
-				priority = new_cost + heuristic(new_node)
+				priority = new_cost + heuristic(new_node,n)
 				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
 
@@ -274,27 +275,27 @@ def astar(heuristic):
 
 #heuristic1 = 0
 if args.method == 1:
-	cameFrom, _, real_cost = astar(lambda x: 0)
+	cameFrom, _, real_cost = astar(lambda x,n: 0)
 
 #heuristic2 = minimum (vertical or horizontal distance from the node to goal)
 if args.method == 2:
-	cameFrom, _, real_cost = astar(lambda x: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
+	cameFrom, _, real_cost = astar(lambda x,n: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
 
 #heuristic3 = maximum (vertical or horizontal distance from the node to goal)
 if args.method == 3:
-	cameFrom, _, real_cost = astar(lambda x: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
+	cameFrom, _, real_cost = astar(lambda x,n: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
 
 #heuristic4 = Manhattan distance
 if args.method == 4:
-	cameFrom, _, real_cost = astar(lambda x: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))
+	cameFrom, _, real_cost = astar(lambda x,n: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))
 
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
 if args.method == 5:
-	cameFrom, _, real_cost = astar(lambda x: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) if (x.prevstep == 'Forward') else ((abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3)) if (x.prevstep =='leap') else(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3)))
+	cameFrom, _, real_cost = astar(lambda x,n: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) if (n.type == 'fw') else ((abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3)) if (n.type =='leap') else(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3)))
 
 #heuristic6 = heuristic5*3
 if args.method == 6:
-	cameFrom, _, real_cost = astar(lambda x: (3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))) if (x.prevstep == 'Forward') else ((3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3))) if (x.prevstep =='leap') else(3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3))))
+	cameFrom, _, real_cost = astar(lambda x,n: (3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))) if (n.type == 'fw') else ((3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3))) if (n.type =='leap') else(3*(abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3))))
 
 
 
