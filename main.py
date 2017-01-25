@@ -292,9 +292,18 @@ def heu5(x, n):
 	if (n.type == 'fw'):
 		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
 	elif (n.type =='leap'):
-		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(3) 
+		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
 	else:
-		return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)+x.getcost(0)/3
+		if x.direction == "n" and (g[0]-x.pos_r) > 0:
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+		elif x.direction == "s" and (g[0]-x.pos_r) < 0:
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+		elif x.direction == "e" and (g[1]-x.pos_c) < 0:
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+		elif x.direction == "w" and (g[1]-x.pos_c) > 0:
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c) + x.getcost(0)
+		else:
+			return abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c)
 
 if args.method == 5:
 	cameFrom, _, real_cost = astar(heu5)
