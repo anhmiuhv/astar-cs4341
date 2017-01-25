@@ -258,11 +258,11 @@ def astar(heuristic):
 
 		for n in current.neighbors():
 			new_node = current.execute(n)
-			new_cost = cost_so_far[current] + current.cost(n) + heuristic(new_node)
-			if new_node not in cost_so_far or new_cost < cost_so_far[new_node]:
+			new_cost = real_cost[current] + current.cost(n)
+			if new_node not in cost_so_far or new_cost < real_cost[new_node]:
 				cost_so_far[new_node] = new_cost
 				real_cost[new_node] = real_cost[current] + current.cost(n)
-				priority = new_cost
+				priority = new_cost + heuristic(new_node)
 				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
 
