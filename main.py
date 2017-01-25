@@ -259,8 +259,7 @@ def astar(heuristic):
 		for n in current.neighbors():
 			new_node = current.execute(n)
 			new_cost = real_cost[current] + current.cost(n)
-			if new_node not in cost_so_far or new_cost < real_cost[new_node]:
-				cost_so_far[new_node] = new_cost
+			if new_node not in real_cost or new_cost < real_cost[new_node]:
 				real_cost[new_node] = real_cost[current] + current.cost(n)
 				priority = new_cost + heuristic(new_node)
 				opqueue.put(new_node, priority)
@@ -287,7 +286,7 @@ if args.method == 3:
 
 #heuristic4 = Manhattan distance
 if args.method == 4:
-	cameFrom, _, real_cost = astar(lambda x: x.pos_c + x.pos_r)
+	cameFrom, _, real_cost = astar(lambda x: abs(g[0]-x.pos_r) + abs(g[1]-x.pos_c))
 
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
 if args.method == 5:
