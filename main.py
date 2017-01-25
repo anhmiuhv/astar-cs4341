@@ -24,6 +24,29 @@ f.close()
 
 #helper function
 #these two should not be needed anymore
+def dir_to_rotate(x, y):
+	if x == "n":
+		if y == "e":
+			return "Right"
+		else:
+			return "Left"
+	if x == "e":
+		if y == "s":
+			return "Right"
+		else:
+			return "Left"
+	if x == "s":
+		if y == "w":
+			return "Right"
+		else:
+			return "Left"
+	if x == "w":
+		if y == "n":
+			return "Right"
+		else:
+			return "Left"
+
+
 def construct_path(came_from, start, goal):
 	current = goal
 	path = [current]
@@ -71,7 +94,7 @@ for i in l:
 		p2 = i.index('G')
 
 g = (p1,p2) #goal coordinate
-					
+
 class Robot:
 	def __init__(self, pos_r = None, pos_c = None):
 		if pos_r == None:
@@ -79,7 +102,6 @@ class Robot:
 				if 'S' in i:
 					self.pos_r = l.index(i)
 					self.pos_c = i.index('S')
-					self.prevstep = "start"
 		else:
 			self.pos_c = pos_c
 			self.pos_r = pos_r
@@ -90,7 +112,7 @@ class Robot:
 		return l[self.pos_r][self.pos_c] == "G"
 
 	def __eq__(self, other):
-		return self.__dict__ == other.__dict__
+		return (self.pos_r == other.pos_r) and (self.pos_c == other.pos_c) and (self.direction == other.direction)
 
 	def __lt__(self, other):
 		return True
@@ -153,13 +175,10 @@ class Robot:
 		new_robot.direction = self.direction
 
 		if step.type == "leap":
-			new_robot.prevstep = "leap"
 			dis = 3
 		elif step.type == "fw":
-			new_robot.prevstep = "Forward"
 			dis = 1
 		elif step.type == "left":
-			new_robot.prevstep = "Turn left"
 			if self.direction == "n":
 				new_robot.direction = "w"
 			elif self.direction == "s":
@@ -170,7 +189,6 @@ class Robot:
 				new_robot.direction = "s"
 			return new_robot
 		elif step.type == "right":
-			new_robot.prevstep = "Turn right"
 			if self.direction == "n":
 				new_robot.direction = "e"
 			elif self.direction == "s":
@@ -247,6 +265,8 @@ def astar(heuristic):
 				priority = new_cost
 				opqueue.put(new_node, priority)
 				cameFrom[new_node] = current
+
+
 	return cameFrom, cost_so_far, real_cost
 
 #heuristic function
@@ -256,11 +276,11 @@ def astar(heuristic):
 #heuristic1 = 0
 if args.method == 1:
 	cameFrom, _, real_cost = astar(lambda x: 0)
-	
+
 #heuristic2 = minimum (vertical or horizontal distance from the node to goal)
 if args.method == 2:
 	cameFrom, _, real_cost = astar(lambda x: min(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
-	
+
 #heuristic3 = maximum (vertical or horizontal distance from the node to goal)
 if args.method == 3:
 	cameFrom, _, real_cost = astar(lambda x: max(abs(g[0]-x.pos_r),abs(g[1]-x.pos_c)))
@@ -268,14 +288,14 @@ if args.method == 3:
 #heuristic4 = Manhattan distance
 if args.method == 4:
 	cameFrom, _, real_cost = astar(lambda x: x.pos_c + x.pos_r)
-	
+
 #heuristic5 = Manhattan distance if previous step is fw, else if (turn then added the cost)
 if args.method == 5:
-	cameFrom, _, real_cost = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else ((x.pos_c + x.pos_r + x.getcost(3)) if (x.prevstep =='leap') else(x.pos_c + x.pos_r+x.getcost(0)/3))) 
+	cameFrom, _, real_cost = astar(lambda x: (x.pos_c + x.pos_r) if (x.prevstep == 'Forward') else ((x.pos_c + x.pos_r + x.getcost(3)) if (x.prevstep =='leap') else(x.pos_c + x.pos_r+x.getcost(0)/3)))
 
 #heuristic6 = heuristic5*3
 if args.method == 6:
-	cameFrom, _, real_cost = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else ((3*(x.pos_c + x.pos_r + x.getcost(3))) if (x.prevstep =='leap') else(3*(x.pos_c + x.pos_r+x.getcost(0)/3)))) 
+	cameFrom, _, real_cost = astar(lambda x: (3*(x.pos_c + x.pos_r)) if (x.prevstep == 'Forward') else ((3*(x.pos_c + x.pos_r + x.getcost(3))) if (x.prevstep =='leap') else(3*(x.pos_c + x.pos_r+x.getcost(0)/3))))
 
 
 
@@ -288,8 +308,15 @@ print("Cost: " + str(real_cost[goal]) + " to " + str(g) + " from " + str((Robot(
 print("Number of steps: " + str(len(path) - 1))
 print("Number of nodes expanded: " + str(nodes_num))
 print("Estimated branching factor: " + str(neighbor_num / nodes_num))
-for a in path:
-	print(a.prevstep)
+print("Start")
+for a in range(len(path) - 1):
+	if path[a].direction == path[a+1].direction:
+		if abs(path[a].pos_c - path[a+1].pos_c) == 1 or abs(path[a].pos_r - path[a+1].pos_r) == 1:
+			print("Forward")
+		else:
+			print("Leap")
+	else:
+		print(dir_to_rotate(path[a].direction, path[a+1].direction))
 #test
 #print (array_pos(1,2))
 #print (rowcol_from(5))
