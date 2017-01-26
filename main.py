@@ -75,18 +75,18 @@ valid = ["fw", "leap", "left", "right"]
 inf = 1000000000
 
 #node for a-star
-class PriorityQueue:
+class PQ:
 	def __init__(self):
-		self.elements = []
+		self.list = []
 
 	def empty(self):
-		return len(self.elements) == 0
+		return len(self.list) == 0
 
 	def put(self, item, priority):
-		heapq.heappush(self.elements, (priority, item))
+		heapq.heappush(self.list, (priority, item))
 
 	def get(self):
-		return heapq.heappop(self.elements)[1]
+		return heapq.heappop(self.list)[1]
 
 for i in l:
 	if 'G' in i:
@@ -238,7 +238,7 @@ nodes_num = 0
 def astar(heuristic):
 	global score, neighbor_num, nodes_num
 	r = Robot()
-	opqueue = PriorityQueue()
+	opqueue = PQ()
 	opqueue.put(r, heuristic(r,Step("fw")))
 	real_cost = {}
 	cameFrom = {}
