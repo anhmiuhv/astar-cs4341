@@ -2,7 +2,7 @@
 import argparse
 import math
 import heapq
-import time
+
 #parsing option from users
 parser = argparse.ArgumentParser(description='Please give mr.robot a terrain information')
 parser.add_argument('filename', help='the name of the file for terrain info')
@@ -304,8 +304,11 @@ if args.method == 6:
 
 
 
-
-goal = next(filter(lambda x: x.isGoal(), cameFrom.keys()))
+min = inf
+for j in filter(lambda x: x.isGoal(), cameFrom.keys()):
+	if real_cost[j] < min:
+		min = real_cost[j]
+		goal = j
 path = construct_path(cameFrom, Robot(), goal)
 score = score - real_cost[goal]
 print("Score: " + str(score))
