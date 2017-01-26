@@ -1,11 +1,11 @@
 import random
-f = open("sample3.txt", "w+")
+f = open("test5.txt", "w+")
 st = ""
 start = False
 goal = False
-for i in range(1000):
-    for j in range(1000):
-        nu = random.randint(0, 500)
+for i in range(100):
+    for j in range(100):
+        nu = random.randint(0, 1000)
         if nu == 0 and not start:
             start = True
             st += "S\t"
