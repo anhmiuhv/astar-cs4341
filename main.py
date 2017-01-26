@@ -315,7 +315,7 @@ print("Score: " + str(score))
 print("Cost: " + str(real_cost[goal]) + " to " + str(g) + " from " + str((Robot().pos_r, Robot().pos_c)))
 print("Number of steps: " + str(len(path) - 1))
 print("Number of nodes expanded: " + str(nodes_num))
-print("Estimated branching factor: " + str(neighbor_num / nodes_num))
+print("Estimated branching factor: " + str(nodes_num**(1/(len(path) - 1))))
 print("Start")
 for a in range(len(path) - 1):
 	if path[a].direction == path[a+1].direction:
