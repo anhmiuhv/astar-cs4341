@@ -239,13 +239,11 @@ def astar(heuristic):
 	global score, neighbor_num, nodes_num
 	r = Robot()
 	opqueue = PriorityQueue()
-	opqueue.put(r, 0)
+	opqueue.put(r, Step("fw"))
 	real_cost = {}
 	cameFrom = {}
 	cost_so_far = {}
-	cameFrom[r] = None
-	firstStep = Step('start');
-	cost_so_far[r] = heuristic(r,firstStep)
+	cameFrom[r] = None	
 	real_cost[r] = 0
 
 	while not opqueue.empty():
